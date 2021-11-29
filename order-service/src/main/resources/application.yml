@@ -1,0 +1,21 @@
+server.port: 0
+
+spring:
+  application:
+    name: order-service
+
+  cloud:
+    config:
+      enabled: false
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:8761/eureka
+  instance.instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+
+# Actuator Setting
+management.endpoints.web.exposure.include: busrefresh, health
+
+logging.level:
+  com.ecommerce: DEBUG

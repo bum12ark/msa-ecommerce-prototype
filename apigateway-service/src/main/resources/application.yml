@@ -1,0 +1,21 @@
+server:
+  port: 8000
+
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://127.0.0.1:8761/eureka
+
+spring:
+  application:
+    name: api-gateway-service
+
+  cloud:
+    # Spring Config Setting
+    config:
+      enabled: false
+
+# Actuator Setting
+management.endpoints.web.exposure.include: busrefresh, health
