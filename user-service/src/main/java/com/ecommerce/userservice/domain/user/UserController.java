@@ -1,5 +1,6 @@
 package com.ecommerce.userservice.domain.user;
 
+import com.ecommerce.userservice.entity.Address;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -53,10 +54,15 @@ public class UserController {
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.OK).build());
     }
 
-    @Data @AllArgsConstructor
-    static class Result<T> {
-        private Integer count;
-        private T data;
+    @PatchMapping("/users/{email}")
+    public ResponseEntity<ResponseUser> modifyUser(@RequestBody @Valid RequestModifyUser requestModifyUser,
+                                                   @PathVariable("email") String email) {
+        UserDto userDto = userService.modifyUserAddress(
+                email,
+                new Address(requestModifyUser.getCity(),
+                        requestModifyUser.getStreet(), requestModifyUser.getZipcode()));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseUser(userDto));
     }
 
     @Data @AllArgsConstructor @NoArgsConstructor
@@ -89,6 +95,25 @@ public class UserController {
             this.street = userDto.getStreet();
             this.zipcode = userDto.getZipcode();
             this.memberType = userDto.getMemberType();
+        }
+    }
+
+    @Data @AllArgsConstructor
+    static class Result<T> {
+        private Integer count;
+        private T data;
+    }
+
+    @Data @NoArgsConstructor @AllArgsConstructor
+    static class RequestModifyUser {
+        private String city;
+        private String street;
+        private String zipcode;
+
+        public RequestModifyUser(UserDto userDto) {
+            this.city = userDto.getCity();
+            this.street = userDto.getStreet();
+            this.zipcode = userDto.getZipcode();
         }
     }
 }

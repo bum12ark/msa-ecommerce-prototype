@@ -38,4 +38,8 @@ public class User extends BaseEntity {
         this.address = address;
         this.memberType = memberType;
     }
+
+    public void modifyAddress(Address address) {
+        this.address = address;
+    }
 }

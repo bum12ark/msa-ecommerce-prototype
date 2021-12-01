@@ -48,4 +48,15 @@ public class UserServiceImpl implements UserService {
     public Optional<UserDto> findUserByEmail(String email) {
         return userRepository.findByEmail(email).map(UserDto::new);
     }
+
+    @Override
+    @Transactional
+    public UserDto modifyUserAddress(String email, Address address) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(NotExistUserException::new);
+
+        user.modifyAddress(new Address(address.getCity(), address.getStreet(), address.getZipcode()));
+
+        return new UserDto(user);
+    }
 }

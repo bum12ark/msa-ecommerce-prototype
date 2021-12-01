@@ -8,7 +8,8 @@ import org.springframework.http.HttpStatus;
 @Getter @AllArgsConstructor
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum ErrorEnum {
-    EXIST_USER(HttpStatus.CONFLICT, "Duplicated user Information");
+    EXIST_USER(HttpStatus.CONFLICT, "Duplicated user Information"),
+    NOT_EXIST_USER(HttpStatus.CONFLICT, "Not Exist User");
 
     private final HttpStatus httpStatus;
     private final String message;

@@ -1,5 +1,6 @@
 package com.ecommerce.userservice.domain.user;
 
+import com.ecommerce.userservice.entity.Address;
 import com.ecommerce.userservice.exception.ErrorEnum;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.discovery.converters.Auto;
@@ -18,11 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -176,5 +175,60 @@ class UserControllerTest {
         actions.andExpect(status().isOk())
                 .andDo(print());
 
+    }
+
+    @Test
+    @DisplayName("회원 수정")
+    public void modifyUserByEmail() throws Exception {
+        // Given
+        String email = "testId@gmail.com";
+        Address address = new Address("전주시", "오송로", "999-99");
+        String requestJson = objectMapper.writeValueAsString(
+                new UserController.RequestModifyUser(address.getCity(), address.getStreet(), address.getZipcode())
+        );
+        UserDto willReturnDto = new UserDto("testId@gmail.com", "홍길동",
+                address.getCity(), address.getStreet(), address.getZipcode(), MemberType.NORMAL);
+
+        given(userService.modifyUserAddress(anyString(), any())).willReturn(willReturnDto);
+
+        // When
+        ResultActions actions = mockMvc.perform(patch("/users/{email}", email)
+                .content(requestJson)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON));
+
+        // Then
+        actions.andExpect(status().isCreated())
+                .andExpect(jsonPath("email").value(willReturnDto.getEmail()))
+                .andExpect(jsonPath("name").value(willReturnDto.getName()))
+                .andExpect(jsonPath("city").value(willReturnDto.getCity()))
+                .andExpect(jsonPath("street").value(willReturnDto.getStreet()))
+                .andExpect(jsonPath("zipcode").value(willReturnDto.getZipcode()))
+                .andExpect(jsonPath("memberType").value(willReturnDto.getMemberType().toString()))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("회원 수정 -  존재하지 않는 회원")
+    public void modifyUserNotExistUser() throws Exception {
+        // Given
+        String email = "notExistUser@gmail.com";
+        Address address = new Address("전주시", "오송로", "999-99");
+        String requestJson = objectMapper.writeValueAsString(
+                new UserController.RequestModifyUser(address.getCity(), address.getStreet(), address.getZipcode())
+        );
+
+        given(userService.modifyUserAddress(anyString(), any())).willThrow(new NotExistUserException());
+
+        // When
+        ResultActions actions = mockMvc.perform(patch("/users/{email}", email)
+                .content(requestJson)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON));
+
+        // Then
+        actions.andExpect(status().isConflict())
+                .andExpect(jsonPath("message").value(ErrorEnum.NOT_EXIST_USER.getMessage()))
+                .andDo(print());
     }
 }
