@@ -59,4 +59,13 @@ public class UserServiceImpl implements UserService {
 
         return new UserDto(user);
     }
+
+    @Override
+    @Transactional
+    public void deleteUserByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(NotExistUserException::new);
+
+        userRepository.delete(user);
+    }
 }

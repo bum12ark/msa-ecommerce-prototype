@@ -65,6 +65,12 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseUser(userDto));
     }
 
+    @DeleteMapping("/users/{email}")
+    public ResponseEntity deleteUser(@PathVariable("email") String email) {
+        userService.deleteUserByEmail(email);
+        return ResponseEntity.ok().build();
+    }
+
     @Data @AllArgsConstructor @NoArgsConstructor
     static class RequestUser {
         @Email @NotNull

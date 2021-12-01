@@ -14,4 +14,6 @@ public interface UserService {
     Optional<UserDto> findUserByEmail(String email);
 
     UserDto modifyUserAddress(String email, Address address);
+
+    void deleteUserByEmail(String email);
 }

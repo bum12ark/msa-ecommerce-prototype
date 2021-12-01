@@ -21,6 +21,7 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -229,6 +230,35 @@ class UserControllerTest {
         // Then
         actions.andExpect(status().isConflict())
                 .andExpect(jsonPath("message").value(ErrorEnum.NOT_EXIST_USER.getMessage()))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("회원 삭제 성공")
+    public void deleteUserByEmail() throws Exception {
+        // Given
+        String email = "testId@gmail.com";
+
+        // When
+        ResultActions actions = mockMvc.perform(delete("/users/{email}", email));
+
+        // Then
+        actions.andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("회원 삭제 - 존재하지 않는 회원")
+    public void deleteUserByEmailNotExistUser() throws Exception {
+        // Given
+        String email = "notExistUser@gmail.com";
+        willThrow(new NotExistUserException()).given(userService).deleteUserByEmail(email);
+
+        // When
+        ResultActions actions = mockMvc.perform(delete("/users/{email}", email));
+
+        // Then
+        actions.andExpect(status().isConflict())
                 .andDo(print());
     }
 }
