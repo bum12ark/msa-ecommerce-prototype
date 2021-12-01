@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -32,19 +33,19 @@ public class UserServiceImpl implements UserService {
 
         User saveUser = userRepository.save(user);
 
-        Address saveAddress = saveUser.getAddress();
-        return new UserDto(saveUser.getEmail(), saveUser.getName(), saveAddress.getCity(),
-                saveAddress.getStreet(), saveAddress.getZipcode(), saveUser.getMemberType());
+        return new UserDto(saveUser);
     }
 
     @Override
     public List<UserDto> findUserAll() {
         return userRepository.findAll()
-                .stream().map(user -> {
-                    Address address = user.getAddress();
-                    return new UserDto(user.getEmail(), user.getName(),
-                            address.getCity(), address.getStreet(), address.getZipcode(), user.getMemberType());
-                })
+                .stream()
+                .map(UserDto::new)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<UserDto> findUserByEmail(String email) {
+        return userRepository.findByEmail(email).map(UserDto::new);
     }
 }

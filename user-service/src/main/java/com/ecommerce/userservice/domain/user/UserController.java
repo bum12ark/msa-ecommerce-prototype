@@ -7,15 +7,13 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -44,6 +42,15 @@ public class UserController {
                 .collect(Collectors.toList());
 
         return new Result<>(responseUsers.size(), responseUsers);
+    }
+
+    @GetMapping("/users/{email}")
+    public ResponseEntity<ResponseUser> getUser(@PathVariable("email") String email) {
+
+        Optional<UserDto> findUser = userService.findUserByEmail(email);
+
+        return findUser.map(userDto -> ResponseEntity.status(HttpStatus.OK).body(new ResponseUser(userDto)))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.OK).build());
     }
 
     @Data @AllArgsConstructor

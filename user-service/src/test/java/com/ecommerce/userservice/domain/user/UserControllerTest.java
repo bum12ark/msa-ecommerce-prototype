@@ -10,13 +10,13 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -134,5 +134,47 @@ class UserControllerTest {
                 .andExpect(jsonPath("count").value(2))
                 .andExpect(jsonPath("data[0].email").value("testId@gmail.com"))
                 .andDo(print());
+    }
+
+    @Test
+    @DisplayName("단일 회원 조회")
+    public void getUserByEmail() throws Exception {
+        // GIVEN
+        String email = "testId@gmail.com";
+        UserDto willReturnUserDto = new UserDto("testId@gmail.com", "홍길동"
+                , "서울시", "광화문로", "111-11", MemberType.NORMAL);
+        Optional<UserDto> willReturnOptional = Optional.of(willReturnUserDto);
+
+        given(userService.findUserByEmail(email)).willReturn(willReturnOptional);
+
+        // WHEN
+        ResultActions actions = mockMvc.perform(get("/users/{email}", email));
+
+        // THEN
+        actions.andExpect(status().isOk())
+                .andExpect(jsonPath("email").value(willReturnUserDto.getEmail()))
+                .andExpect(jsonPath("name").value(willReturnUserDto.getName()))
+                .andExpect(jsonPath("city").value(willReturnUserDto.getCity()))
+                .andExpect(jsonPath("street").value(willReturnUserDto.getStreet()))
+                .andExpect(jsonPath("zipcode").value(willReturnUserDto.getZipcode()))
+                .andExpect(jsonPath("memberType").value(willReturnUserDto.getMemberType().toString()))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("단일 회원 조회 - 없는 회원")
+    public void getUserByEmailNoSuchUser() throws Exception {
+        // GIVEN
+        String email = "noSuchEmail@gmail.com";
+        Optional<UserDto> willReturnDto = Optional.of(new UserDto());
+        given(userService.findUserByEmail(email)).willReturn(willReturnDto);
+
+        // WHEN
+        ResultActions actions = mockMvc.perform(get("/users/{email}", email));
+
+        // THEN
+        actions.andExpect(status().isOk())
+                .andDo(print());
+
     }
 }
