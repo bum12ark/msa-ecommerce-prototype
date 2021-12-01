@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,8 +31,25 @@ public class UserController {
 
         UserDto createdUserDto = userService.createUser(requestUserDto);
 
-        ResponseUser responseUser = modelMapper.map(createdUserDto, ResponseUser.class);
+        ResponseUser responseUser = new ResponseUser(createdUserDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseUser);
+    }
+
+    @GetMapping("/users")
+    public Result<List<ResponseUser>> getUsers() {
+
+        List<ResponseUser> responseUsers = userService.findUserAll()
+                .stream()
+                .map(ResponseUser::new)
+                .collect(Collectors.toList());
+
+        return new Result<>(responseUsers.size(), responseUsers);
+    }
+
+    @Data @AllArgsConstructor
+    static class Result<T> {
+        private Integer count;
+        private T data;
     }
 
     @Data @AllArgsConstructor @NoArgsConstructor
@@ -54,5 +74,14 @@ public class UserController {
         private String street;
         private String zipcode;
         private MemberType memberType;
+
+        public ResponseUser(UserDto userDto) {
+            this.email = userDto.getEmail();
+            this.name = userDto.getName();
+            this.city = userDto.getCity();
+            this.street = userDto.getStreet();
+            this.zipcode = userDto.getZipcode();
+            this.memberType = userDto.getMemberType();
+        }
     }
 }

@@ -15,9 +15,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -107,6 +111,28 @@ class UserControllerTest {
 
         // THEN
         actions.andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("모든 회원 정보 조회")
+    public void getUserAll() throws Exception {
+        // GIVEN
+        List<UserDto> willReturnList = new ArrayList<>();
+        willReturnList.add(new UserDto("testId@gmail.com", "홍길동"
+                , "서울시", "광화문로", "111-11", MemberType.NORMAL));
+        willReturnList.add(new UserDto("testId@naver.com", "김유신"
+                , "전주시", "천마산로", "999-99", MemberType.NORMAL));
+
+        given(userService.findUserAll()).willReturn(willReturnList);
+
+        // WHEN
+        ResultActions actions = mockMvc.perform(get("/users"));
+
+        // THEN
+        actions.andExpect(status().isOk())
+                .andExpect(jsonPath("count").value(2))
+                .andExpect(jsonPath("data[0].email").value("testId@gmail.com"))
                 .andDo(print());
     }
 }

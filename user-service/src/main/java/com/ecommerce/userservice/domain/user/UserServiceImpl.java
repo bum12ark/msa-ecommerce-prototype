@@ -5,6 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
@@ -32,5 +35,16 @@ public class UserServiceImpl implements UserService {
         Address saveAddress = saveUser.getAddress();
         return new UserDto(saveUser.getEmail(), saveUser.getName(), saveAddress.getCity(),
                 saveAddress.getStreet(), saveAddress.getZipcode(), saveUser.getMemberType());
+    }
+
+    @Override
+    public List<UserDto> findUserAll() {
+        return userRepository.findAll()
+                .stream().map(user -> {
+                    Address address = user.getAddress();
+                    return new UserDto(user.getEmail(), user.getName(),
+                            address.getCity(), address.getStreet(), address.getZipcode(), user.getMemberType());
+                })
+                .collect(Collectors.toList());
     }
 }
