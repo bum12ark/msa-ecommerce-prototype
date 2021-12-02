@@ -1,16 +1,18 @@
 package com.ecommerce.userservice.domain.user;
 
+import com.ecommerce.userservice.config.TestConfig;
 import com.ecommerce.userservice.entity.Address;
 import com.ecommerce.userservice.exception.ErrorEnum;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.netflix.discovery.converters.Auto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.BDDMockito;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -19,14 +21,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(UserController.class)
+@Import(TestConfig.class)
+@AutoConfigureRestDocs(uriHost = "127.0.0.1", uriPort = 8000)
 class UserControllerTest {
 
     @Autowired
@@ -206,7 +216,23 @@ class UserControllerTest {
                 .andExpect(jsonPath("street").value(willReturnDto.getStreet()))
                 .andExpect(jsonPath("zipcode").value(willReturnDto.getZipcode()))
                 .andExpect(jsonPath("memberType").value(willReturnDto.getMemberType().toString()))
-                .andDo(print());
+                .andDo(print())
+                .andDo(document("modify-user-success",
+                        pathParameters( // pathVariable
+                                parameterWithName("email").description("유저 이메일")
+                        ),
+                        requestHeaders( // 요청 헤더
+                                headerWithName(HttpHeaders.ACCEPT).description(MediaType.APPLICATION_JSON)
+                        ),
+                        responseFields( // 응답필드
+                                fieldWithPath("email").description("email of User"),
+                                fieldWithPath("name").description("name of User"),
+                                fieldWithPath("city").description("city of User"),
+                                fieldWithPath("street").description("street of User"),
+                                fieldWithPath("zipcode").description("zipcode of User"),
+                                fieldWithPath("memberType").description("memberType of User")
+                        )))
+        ;
     }
 
     @Test
@@ -259,6 +285,9 @@ class UserControllerTest {
 
         // Then
         actions.andExpect(status().isConflict())
-                .andDo(print());
+                .andDo(print())
+                .andDo(document("user-delete-no-such-user", pathParameters(
+                        parameterWithName("email").description("유저 이메일")
+                )));
     }
 }
