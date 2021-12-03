@@ -1,17 +1,20 @@
 package com.ecommerce.userservice.domain.user;
 
+import com.ecommerce.userservice.config.TestConfig;
 import com.ecommerce.userservice.entity.Address;
 import com.ecommerce.userservice.exception.ErrorEnum;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.netflix.discovery.converters.Auto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.BDDMockito;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.payload.FieldDescriptor;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -22,11 +25,18 @@ import java.util.Optional;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UserController.class)
+@Import(TestConfig.class)
+@AutoConfigureRestDocs(uriHost = "127.0.0.1", uriPort = 8000)
 class UserControllerTest {
 
     @Autowired
@@ -68,8 +78,19 @@ class UserControllerTest {
         // then
         actions.andExpect(status().isCreated())
                 .andExpect(jsonPath("email").value("testId@gmail.com"))
-                .andDo(print());
+                .andDo(print())
+                .andDo(document("user-post",
+                        requestFields(
+                                getRequestUserFieldDescriptors()
+                        ),
+                        responseFields(
+                                getResponseUserFieldDescriptors()
+                        )
+                ))
+        ;
     }
+
+
 
     @Test
     @DisplayName("회원 등록 중복 회원")
@@ -91,7 +112,15 @@ class UserControllerTest {
         // Then
         actions.andExpect(status().isConflict())
                 .andExpect(jsonPath("message").value(ErrorEnum.EXIST_USER.getMessage()))
-                .andDo(print());
+                .andDo(print())
+                .andDo(document("user-post-duplicate",
+                        requestFields(
+                                getRequestUserFieldDescriptors()
+                        ),
+                        responseFields(
+                                getErrorDescription()
+                        )))
+        ;
     }
 
     @Test
@@ -99,7 +128,7 @@ class UserControllerTest {
     void createUserInvalidParameter() throws Exception {
         // GIVEN
         UserController.RequestUser requestUser =
-                new UserController.RequestUser("testId", null,
+                new UserController.RequestUser("testId", "",
                         "서울시", "광화문로", "111-11");
         String requestJson = objectMapper.writeValueAsString(requestUser);
 
@@ -111,7 +140,10 @@ class UserControllerTest {
 
         // THEN
         actions.andExpect(status().isBadRequest())
-                .andDo(print());
+                .andDo(print())
+                .andDo(document("user-post-invalidParameter",
+                        requestFields(getRequestUserFieldDescriptors())))
+        ;
     }
 
     @Test
@@ -133,7 +165,18 @@ class UserControllerTest {
         actions.andExpect(status().isOk())
                 .andExpect(jsonPath("count").value(2))
                 .andExpect(jsonPath("data[0].email").value("testId@gmail.com"))
-                .andDo(print());
+                .andDo(print())
+                .andDo(document("user-get-allUser",
+                        responseFields(
+                                fieldWithPath("count").type(JsonFieldType.NUMBER).description("data 총 개수"),
+                                fieldWithPath("data[].email").type(JsonFieldType.STRING).description("이메일"),
+                                fieldWithPath("data[].name").type(JsonFieldType.STRING).description("이름"),
+                                fieldWithPath("data[].city").type(JsonFieldType.STRING).description("도시"),
+                                fieldWithPath("data[].street").type(JsonFieldType.STRING).description("거리"),
+                                fieldWithPath("data[].zipcode").type(JsonFieldType.STRING).description("우편번호"),
+                                fieldWithPath("data[].memberType").type(JsonFieldType.STRING).description("회원 등급")
+                        )))
+        ;
     }
 
     @Test
@@ -158,7 +201,12 @@ class UserControllerTest {
                 .andExpect(jsonPath("street").value(willReturnUserDto.getStreet()))
                 .andExpect(jsonPath("zipcode").value(willReturnUserDto.getZipcode()))
                 .andExpect(jsonPath("memberType").value(willReturnUserDto.getMemberType().toString()))
-                .andDo(print());
+                .andDo(print())
+                .andDo(document("user-get",
+                        pathParameters(parameterWithName("email").description("유저 이메일")),
+                        responseFields(getResponseUserFieldDescriptors())
+                        ))
+        ;
     }
 
     @Test
@@ -166,15 +214,18 @@ class UserControllerTest {
     public void getUserByEmailNoSuchUser() throws Exception {
         // GIVEN
         String email = "noSuchEmail@gmail.com";
-        Optional<UserDto> willReturnDto = Optional.of(new UserDto());
-        given(userService.findUserByEmail(email)).willReturn(willReturnDto);
+        given(userService.findUserByEmail(email)).willReturn(Optional.empty());
 
         // WHEN
         ResultActions actions = mockMvc.perform(get("/users/{email}", email));
 
         // THEN
         actions.andExpect(status().isOk())
-                .andDo(print());
+                .andDo(print())
+                .andDo(document("user-get-notExist",
+                        pathParameters(parameterWithName("email").description("유저 이메일"))
+                        ))
+        ;
 
     }
 
@@ -206,7 +257,20 @@ class UserControllerTest {
                 .andExpect(jsonPath("street").value(willReturnDto.getStreet()))
                 .andExpect(jsonPath("zipcode").value(willReturnDto.getZipcode()))
                 .andExpect(jsonPath("memberType").value(willReturnDto.getMemberType().toString()))
-                .andDo(print());
+                .andDo(print())
+                .andDo(document("user-patch",
+                        pathParameters( // pathVariable
+                                parameterWithName("email").description("유저 이메일")
+                        ),
+                        requestFields( // 요청 필드
+                                fieldWithPath("city").type(JsonFieldType.STRING).description("회원 도시"),
+                                fieldWithPath("street").type(JsonFieldType.STRING).description("회원 거리"),
+                                fieldWithPath("zipcode").type(JsonFieldType.STRING).description("회원 우편번호")
+                        ),
+                        responseFields( // 응답필드
+                                getResponseUserFieldDescriptors()
+                        )))
+        ;
     }
 
     @Test
@@ -230,7 +294,17 @@ class UserControllerTest {
         // Then
         actions.andExpect(status().isConflict())
                 .andExpect(jsonPath("message").value(ErrorEnum.NOT_EXIST_USER.getMessage()))
-                .andDo(print());
+                .andDo(print())
+                .andDo(document("user-patch-notExist",
+                        pathParameters(parameterWithName("email").description("이메일")),
+                        requestFields(
+                                fieldWithPath("city").type(JsonFieldType.STRING).description("회원 도시"),
+                                fieldWithPath("street").type(JsonFieldType.STRING).description("회원 거리"),
+                                fieldWithPath("zipcode").type(JsonFieldType.STRING).description("회원 우편번호")
+                        ),
+                        responseFields(getErrorDescription())
+                        ))
+        ;
     }
 
     @Test
@@ -244,7 +318,11 @@ class UserControllerTest {
 
         // Then
         actions.andExpect(status().isOk())
-                .andDo(print());
+                .andDo(print())
+                .andDo(document("user-delete",
+                        pathParameters(parameterWithName("email").description("이메일")))
+                        )
+        ;
     }
 
     @Test
@@ -259,6 +337,34 @@ class UserControllerTest {
 
         // Then
         actions.andExpect(status().isConflict())
-                .andDo(print());
+                .andDo(print())
+                .andDo(document("user-delete-notExist",
+                        pathParameters(
+                            parameterWithName("email").description("유저 이메일")
+                        ),
+                        responseFields(getErrorDescription())
+                ))
+        ;
+    }
+
+    private FieldDescriptor getErrorDescription() {
+        return fieldWithPath("message").description("에러 메시지");
+    }
+
+    private FieldDescriptor[] getRequestUserFieldDescriptors() {
+        return new FieldDescriptor[]{fieldWithPath("email").description("회원 이메일"),
+                fieldWithPath("name").type(JsonFieldType.STRING).description("회원 이름"),
+                fieldWithPath("city").type(JsonFieldType.STRING).description("회원 도시"),
+                fieldWithPath("street").type(JsonFieldType.STRING).description("회원 거리"),
+                fieldWithPath("zipcode").type(JsonFieldType.STRING).description("회원 우편번호")};
+    }
+
+    private FieldDescriptor[] getResponseUserFieldDescriptors() {
+        return new FieldDescriptor[]{fieldWithPath("email").description("회원 이메일"),
+                fieldWithPath("name").type(JsonFieldType.STRING).description("회원 이름"),
+                fieldWithPath("city").type(JsonFieldType.STRING).description("회원 도시"),
+                fieldWithPath("street").type(JsonFieldType.STRING).description("회원 거리"),
+                fieldWithPath("zipcode").type(JsonFieldType.STRING).description("회원 우편번호"),
+                fieldWithPath("memberType").type(JsonFieldType.STRING).description("회원 등급")};
     }
 }
