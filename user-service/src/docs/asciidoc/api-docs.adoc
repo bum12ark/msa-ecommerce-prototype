@@ -2,10 +2,9 @@
 :icons: font
 :source-highlighter: highlightjs
 :toc: left
-:toclevels: 4
+:toclevels: 2
 :sectlinks:
-:operation-curl-request-title: Example request
-:operation-http-response-title: Example response
+
 
 [[overview]]
 = 개요
@@ -56,12 +55,42 @@
 
 | `404 Not Found`
 | 요청한 리소스가 없음.
+
+| `409 Conflict`
+| 클라이언트의 요청이 서버의 상태와 충돌이 발생한 경우.
 |===
 
+[[snippets-write-convention]]
+== snippets 작성 컨벤션
+domain-httpRequestCode-etc
+
 == 회원
+=== 회원 가입
+operation::user-post[snippets='curl-request,http-request,http-response,request-fields,response-fields']
+
+=== 회원 가입 (중복 회원)
+operation::user-post-duplicate[snippets='curl-request,http-request,http-response,request-fields,response-fields']
+
+=== 회원 가입 (파라미터 오류)
+operation::user-post-invalidParameter[snippets='curl-request,http-request,http-response,request-fields']
+
+=== 모든 회원 조회
+operation::user-get-allUser[snippets='curl-request,http-request,http-response,response-fields']
+
+=== 단일 회원 조회
+operation::user-get[snippets='curl-request,http-request,http-response,path-parameters,response-fields']
+
+=== 단일 회원 (없는 회원)
+operation::user-get-notExist[snippets='curl-request,http-request,http-response,path-parameters']
 
 === 회원 수정
-operation::modify-user-success[snippets='curl-request,path-parameters,response-fields,http-response']
+operation::user-patch[snippets='curl-request,http-request,http-response,path-parameters,request-fields,response-fields']
 
-=== 회원 삭제 (존재하지 않는 회원)
-operation::user-delete-no-such-user[snippets='curl-request,http-response']
+=== 회원 수정 (없는 회원)
+operation::user-patch-notExist[snippets='curl-request,http-request,http-response,path-parameters,request-fields,response-fields']
+
+=== 회원 삭제
+operation::user-delete[snippets='curl-request,http-request,http-response,path-parameters']
+
+=== 회원 삭제 (없는 회원)
+operation::user-delete-notExist[snippets='curl-request,http-request,http-response,path-parameters']
