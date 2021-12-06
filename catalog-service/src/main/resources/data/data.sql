@@ -1,0 +1,12 @@
+INSERT INTO CATEGORY(category_id, name, parent_id) VALUES (1, '헬스용품', null);
+INSERT INTO CATEGORY(category_id, name, parent_id) VALUES (2, '스포츠웨어', null);
+INSERT INTO CATEGORY(category_id, name, parent_id) VALUES (3, '보조제', null);
+INSERT INTO CATEGORY(category_id, name, parent_id) VALUES (4, '쉐이커&물통&케이스', 1);
+INSERT INTO CATEGORY(category_id, name, parent_id) VALUES (5, '홈트레이닝', 1);
+INSERT INTO CATEGORY(category_id, name, parent_id) VALUES (6, '티셔츠', 2);
+INSERT INTO CATEGORY(category_id, name, parent_id) VALUES (7, '나시', 2);
+INSERT INTO CATEGORY(category_id, name, parent_id) VALUES (8, '하의', 2);
+INSERT INTO CATEGORY(category_id, name, parent_id) VALUES (9, '모자', 2);
+INSERT INTO CATEGORY(category_id, name, parent_id) VALUES (10, '단백질 보충제', 3);
+INSERT INTO CATEGORY(category_id, name, parent_id) VALUES (11, '다이어트', 3);
+INSERT INTO CATEGORY(category_id, name, parent_id) VALUES (12, '비타민', 3);
