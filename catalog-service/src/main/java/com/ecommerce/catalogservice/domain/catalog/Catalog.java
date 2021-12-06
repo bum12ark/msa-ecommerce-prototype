@@ -1,5 +1,7 @@
 package com.ecommerce.catalogservice.domain.catalog;
 
+import com.ecommerce.catalogservice.domain.category.Category;
+
 import javax.persistence.*;
 
 @Entity
