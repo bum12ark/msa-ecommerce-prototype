@@ -20,7 +20,10 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(CategoryController.class)
@@ -46,12 +49,7 @@ class CategoryControllerTest {
         // WHEN
         ResultActions resultActions = mockMvc.perform(get("/category"));
 
-        // THEN
-        FieldDescriptor[] categoryDto = {
-                fieldWithPath("categoryId").description("카테고리 아이디"),
-                fieldWithPath("name").description("이름"),
-                fieldWithPath("parentId").description("부모 아이디")
-        };
+        FieldDescriptor[] categoryDto = getCategoryFieldDescriptor();
 
         resultActions.andExpect(status().isOk())
                 .andDo(print())
@@ -86,6 +84,54 @@ class CategoryControllerTest {
 
         rootNode.setSubCategories(List.of(subCategory1, subCategory2, subCategory3));
         return rootNode;
+    }
+
+    @Test
+    public void getParentCategories() throws Exception {
+        // GIVEN
+        Long leafCategoryId = 4L;
+        given(categoryService.findParentCategories(leafCategoryId)).willReturn(createParentCategories());
+
+        // WHEN
+        ResultActions resultActions = mockMvc.perform(get("/category/{leafCategoryId}", leafCategoryId));
+
+        // THEN
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("categoryId").value(0))
+                .andExpect(jsonPath("name").value("홈"))
+                .andExpect(jsonPath("parentId").isEmpty())
+                .andExpect(jsonPath("subCategories").isArray())
+                .andDo(print())
+                .andDo(document("get-category-parent",
+                        pathParameters(
+                                parameterWithName("leafCategoryId").description("카테고리 아이디")
+                        ),
+                        responseFields(getCategoryFieldDescriptor())
+                                .and(subsectionWithPath("subCategories[]")
+                                .type(JsonFieldType.ARRAY).description("자식 카테고리"))
+                ))
+        ;
+    }
+
+    private CategoryDto createParentCategories() {
+        CategoryDto rootNode = CategoryDto.createRootNode();
+
+        CategoryDto subCategory1 = new CategoryDto(1L, "헬스용품", 0L);
+        CategoryDto subCategory11 = new CategoryDto(4L, "쉐이커&물통&케이스", 1L);
+
+        subCategory1.addSubCategories(subCategory11);
+        rootNode.addSubCategories(subCategory1);
+
+        return rootNode;
+    }
+
+    private FieldDescriptor[] getCategoryFieldDescriptor() {
+        // THEN
+        return new FieldDescriptor[]{
+                fieldWithPath("categoryId").description("카테고리 아이디"),
+                fieldWithPath("name").description("이름"),
+                fieldWithPath("parentId").description("부모 아이디")
+        };
     }
 
 }
