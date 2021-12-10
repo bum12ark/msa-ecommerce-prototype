@@ -1,11 +1,19 @@
-package com.ecommerce.catalogservice.domain.catalog;
+package com.ecommerce.catalogservice.domain.category;
+
+import com.ecommerce.catalogservice.entity.BaseEntity;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class Category {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+public class Category extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "category_id")
@@ -20,8 +28,19 @@ public class Category {
     @OneToMany(mappedBy = "parent")
     private List<Category> child = new ArrayList<>();
 
+    @Builder
+    public Category(String name) {
+        this.name = name;
+    }
+
+    /* 연관관계 편의 메소드 */
     public void addChildCategory(Category child) {
         this.child.add(child);
         this.parent = this;
     }
+
+    public CategoryDto toCategoryDto() {
+        return new CategoryDto(id, name, parent.getId());
+    }
+
 }
