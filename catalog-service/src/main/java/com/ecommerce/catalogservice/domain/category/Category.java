@@ -39,4 +39,8 @@ public class Category extends BaseEntity {
         this.parent = this;
     }
 
+    public CategoryDto toCategoryDto() {
+        return new CategoryDto(id, name, parent.getId());
+    }
+
 }

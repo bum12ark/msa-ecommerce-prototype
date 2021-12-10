@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -72,4 +73,10 @@ public class CategoryServiceImpl implements CategoryService {
         return rootNode;
     }
 
+    @Override
+    public CategoryDto findById(Long categoryId) {
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(NoSuchElementException::new);
+        return category.toCategoryDto();
+    }
 }

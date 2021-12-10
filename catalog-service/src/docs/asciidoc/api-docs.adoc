@@ -69,3 +69,11 @@ domain-httpRequestCode-etc
 operation::get-category-all[snippets='curl-request,http-request,http-response,response-fields']
 === 카테고리 라벨 조회 (최상위 부모)
 operation::get-category-parent[snippets='curl-request,http-request,http-response,path-parameters,response-fields']
+
+== 카탈로그
+=== 카탈로그 생성
+operation::post-catalog[snippets='curl-request,http-request,http-response,request-fields,response-fields']
+=== 카탈로그 생성 (잘못된 파라미터)
+operation::catalog-post-invalidParameter[snippets='curl-request,http-request,http-response,request-fields']
+=== 카탈로그 (없는 카테고리 번호)
+operation::catalog-post-notExistCategoryId[snippets='curl-request,http-request,http-response,request-fields,response-fields']
