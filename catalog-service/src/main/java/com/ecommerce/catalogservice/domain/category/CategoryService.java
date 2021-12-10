@@ -4,4 +4,6 @@ public interface CategoryService {
 
     CategoryDto findCategoryAll();
 
+    CategoryDto findParentCategories(Long categoryId);
+
 }

@@ -67,3 +67,5 @@ domain-httpRequestCode-etc
 == 카테고리
 === 모든 카테고리 조회
 operation::get-category-all[snippets='curl-request,http-request,http-response,response-fields']
+=== 카테고리 라벨 조회 (최상위 부모)
+operation::get-category-parent[snippets='curl-request,http-request,http-response,path-parameters,response-fields']

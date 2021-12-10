@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,5 +46,30 @@ public class CategoryServiceImpl implements CategoryService {
         subCategories.forEach(categoryDto -> addSubCategories(categoryDto, groupingByParent));
     }
 
+    @Override
+    public CategoryDto findParentCategories(Long categoryId) {
+        Map<Long, CategoryDto> categoryIdMap = categoryRepository.findAll()
+                .stream()
+                .filter(category -> Objects.nonNull(category.getParent()))
+                .map(category -> new CategoryDto(category.getId(), category.getName()
+                        , category.getParent().getId()))
+                .collect(Collectors.toMap(CategoryDto::getCategoryId, Function.identity()));
+
+        return getCategoryLabel(categoryId, categoryIdMap);
+    }
+
+    private CategoryDto getCategoryLabel(Long leafCategoryId, Map<Long, CategoryDto> categoryIdMap) {
+        CategoryDto categoryDto = categoryIdMap.get(leafCategoryId);
+
+        while (categoryIdMap.get(categoryDto.getParentId()) != null) {
+            CategoryDto parent = categoryIdMap.get(categoryDto.getParentId());
+            parent.addSubCategories(categoryDto);
+            categoryDto = parent;
+        }
+
+        CategoryDto rootNode = CategoryDto.createRootNode();
+        rootNode.getSubCategories().add(categoryDto);
+        return rootNode;
+    }
 
 }
