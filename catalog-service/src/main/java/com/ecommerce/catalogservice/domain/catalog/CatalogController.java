@@ -6,15 +6,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -64,6 +65,44 @@ public class CatalogController {
             this.stockQuantity = catalogDto.getStockQuantity();
             this.categoryId = categoryDto.getCategoryId();
             this.categoryName = categoryDto.getName();
+        }
+    }
+
+    @GetMapping("/catalog")
+    public ResponseEntity getMainCatalogs(CatalogSearchCondition condition,
+                                          @RequestParam(value = "lastCatalogId", required = false)
+                                                 Long lastCatalogId) {
+
+        List<CatalogCategoryDto> catalogSearch = catalogService.findCatalogSearch(condition, lastCatalogId);
+        List<ResponseCatalogMain> responses = catalogSearch
+                .stream()
+                .map(ResponseCatalogMain::new)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new Result<>(responses.size(), responses));
+    }
+
+    @Data @AllArgsConstructor
+    static class Result<T> {
+        private Integer count;
+        private T data;
+    }
+
+    @Data @AllArgsConstructor
+    static class ResponseCatalogMain {
+        private Long catalogId;
+        private String catalogName;
+        private Integer price;
+        private Integer stockQuantity;
+        private Long categoryId;
+
+        public ResponseCatalogMain(CatalogCategoryDto dto) {
+            this.catalogId = dto.getCatalogId();
+            this.catalogName = dto.getCatalogName();
+            this.price = dto.getPrice();
+            this.stockQuantity = dto.getStockQuantity();
+            this.categoryId = dto.getCategoryId();
         }
     }
 }
