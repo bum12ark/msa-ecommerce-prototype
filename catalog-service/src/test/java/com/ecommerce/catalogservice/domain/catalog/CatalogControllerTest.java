@@ -18,10 +18,17 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -144,6 +151,52 @@ class CatalogControllerTest {
                         ));
     }
 
+    @Test
+    @DisplayName("메인 카탈로그 가져오기")
+    public void getMainCatalogs() throws Exception {
+        // Given
+        Long lastCatalogId = 6L;
+        Long categoryId = 5L;
+        String catalogName = "홈트레이닝";
+        CatalogSearchCondition condition = new CatalogSearchCondition(categoryId, catalogName);
+
+        given(catalogService.findCatalogSearch(any(CatalogSearchCondition.class), anyLong()))
+                .willReturn(getWillReturnMainCatalogs());
+
+        // When
+        ResultActions resultActions = mockMvc.perform(get("/catalog")
+                .param("categoryId", condition.getCategoryId().toString())
+                .param("catalogName", condition.getCatalogName())
+                .param("lastCatalogId", lastCatalogId.toString())
+        );
+
+        // Then
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("count").exists())
+                .andExpect(jsonPath("data").exists())
+                .andDo(print())
+                .andDo(document("catalog-get-main",
+                        requestParameters(
+                                parameterWithName("categoryId").optional().description("검색 카테고리 아이디"),
+                                parameterWithName("catalogName").optional().description("검색 카탈로그 이름"),
+                                parameterWithName("lastCatalogId").optional().description("마지막 카탈로그 아이디")
+                        ),
+                        responseFields(
+                                fieldWithPath("count").type(JsonFieldType.NUMBER).description("data 총 개수")
+                        )
+                                .and(subsectionWithPath("data[]")
+                                        .type(JsonFieldType.ARRAY).description("카탈로그 데이터")
+                        )
+                        ));
+    }
+
+    private List<CatalogCategoryDto> getWillReturnMainCatalogs() {
+        CatalogCategoryDto dto1 =
+                new CatalogCategoryDto(5L, "홈트레이닝2", 20000, 200, 5L);
+        CatalogCategoryDto dto2 =
+                new CatalogCategoryDto(4L, "홈트레이닝1", 20000, 200, 5L);
+        return List.of(dto1, dto2);
+    }
 
     private FieldDescriptor[] getRequestFieldDescriptor() {
         return new FieldDescriptor[]{fieldWithPath("name").type(JsonFieldType.STRING).description("카탈로그 이름"),

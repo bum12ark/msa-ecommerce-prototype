@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
@@ -15,6 +16,7 @@ public class CatalogServiceImpl implements CatalogService{
 
     private final CategoryRepository categoryRepository;
     private final CatalogRepository catalogRepository;
+    private final CatalogRepositoryCustom catalogRepositoryCustom;
 
     @Override
     @Transactional
@@ -31,4 +33,10 @@ public class CatalogServiceImpl implements CatalogService{
         return savedCatalog.toCatalogDto()
                 .orElseThrow(NoSuchElementException::new);
     }
+
+    @Override
+    public List<CatalogCategoryDto> findCatalogSearch(CatalogSearchCondition condition, Long lastCatalogId) {
+        return catalogRepositoryCustom.findMainCatalogsNoOffset(condition, lastCatalogId);
+    }
+
 }
