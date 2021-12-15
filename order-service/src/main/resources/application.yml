@@ -8,6 +8,22 @@ spring:
     config:
       enabled: false
 
+  datasource:
+    url: jdbc:postgresql://localhost:5432/orderdb
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: admin
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+    open-in-view: false
+    default_batch_fetch_size: 1000
+
 eureka:
   client:
     service-url:
@@ -19,3 +35,4 @@ management.endpoints.web.exposure.include: busrefresh, health
 
 logging.level:
   com.ecommerce: DEBUG
+  org.hibernate.type: trace
