@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +32,7 @@ public class CatalogServiceImpl implements CatalogService{
 
         Catalog savedCatalog = catalogRepository.save(catalog);
 
-        return savedCatalog.toCatalogDto()
+        return savedCatalog.toOptionalCatalogDto()
                 .orElseThrow(NoSuchElementException::new);
     }
 
@@ -39,4 +41,11 @@ public class CatalogServiceImpl implements CatalogService{
         return catalogRepositoryCustom.findMainCatalogsNoOffset(condition, lastCatalogId);
     }
 
+    @Override
+    public List<CatalogDto> findCatalogIn(List<Long> catalogIds) {
+        return catalogRepository.findByIdIn(catalogIds)
+                .stream()
+                .map(Catalog::toCatalogDto)
+                .collect(Collectors.toList());
+    }
 }

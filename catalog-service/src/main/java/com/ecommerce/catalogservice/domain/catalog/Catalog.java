@@ -38,7 +38,11 @@ public class Catalog extends BaseEntity {
         this.category = category;
     }
 
-    public Optional<CatalogDto> toCatalogDto() {
+    public Optional<CatalogDto> toOptionalCatalogDto() {
         return Optional.of(new CatalogDto(name, price, stockQuantity));
+    }
+
+    public CatalogDto toCatalogDto() {
+        return new CatalogDto(id, name, price, stockQuantity);
     }
 }
