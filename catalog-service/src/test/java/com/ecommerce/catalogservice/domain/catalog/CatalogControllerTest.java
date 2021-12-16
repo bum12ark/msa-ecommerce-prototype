@@ -20,15 +20,13 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -164,7 +162,7 @@ class CatalogControllerTest {
                 .willReturn(getWillReturnMainCatalogs());
 
         // When
-        ResultActions resultActions = mockMvc.perform(get("/catalog")
+        ResultActions resultActions = mockMvc.perform(get("/catalog/main")
                 .param("categoryId", condition.getCategoryId().toString())
                 .param("catalogName", condition.getCatalogName())
                 .param("lastCatalogId", lastCatalogId.toString())
@@ -196,6 +194,42 @@ class CatalogControllerTest {
         CatalogCategoryDto dto2 =
                 new CatalogCategoryDto(4L, "홈트레이닝1", 20000, 200, 5L);
         return List.of(dto1, dto2);
+    }
+
+    @Test
+    @DisplayName("카탈로그 조회 - catalogId IN Query")
+    public void getCatalogIn() throws Exception {
+        // GIVEN
+        given(catalogService.findCatalogIn(anyList())).willReturn(getWillReturnCatalogIn());
+
+        // WHEN
+        ResultActions resultActions =
+                mockMvc.perform(get("/catalog/{catalogIds}", "1,2,3"));
+
+        // THEN
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("count").value(3))
+                .andExpect(jsonPath("data").exists())
+                .andDo(print())
+                .andDo(document("catalog-get-in",
+                        pathParameters(
+                                parameterWithName("catalogIds").description("카탈로그 아이디들")
+                        ),
+                        responseFields(
+                                fieldWithPath("count").type(JsonFieldType.NUMBER).description("data 총 개수")
+                        )
+                                .and(subsectionWithPath("data[]")
+                                        .type(JsonFieldType.ARRAY).description("카탈로그 데이터")
+                                )
+                        ))
+        ;
+    }
+
+    private List<CatalogDto> getWillReturnCatalogIn() {
+        CatalogDto dto1 = CatalogDto.builder().catalogId(1L).name("쉐이커1").price(10_000).stockQuantity(100).build();
+        CatalogDto dto2 = CatalogDto.builder().catalogId(2L).name("홈트레이닝1").price(20_000).stockQuantity(200).build();
+        CatalogDto dto3 = CatalogDto.builder().catalogId(3L).name("티셔츠1").price(30_000).stockQuantity(300).build();
+        return List.of(dto1, dto2, dto3);
     }
 
     private FieldDescriptor[] getRequestFieldDescriptor() {

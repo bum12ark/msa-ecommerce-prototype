@@ -79,3 +79,5 @@ operation::catalog-post-invalidParameter[snippets='curl-request,http-request,htt
 operation::catalog-post-notExistCategoryId[snippets='curl-request,http-request,http-response,request-fields,response-fields']
 === 카탈로그 메인
 operation::catalog-get-main[snippets='curl-request,http-request,http-response,request-parameters,response-fields']
+=== 다수의 카탈로그 조회
+operation::catalog-get-in[snippets='curl-request,http-request,http-response,path-parameters,response-fields']

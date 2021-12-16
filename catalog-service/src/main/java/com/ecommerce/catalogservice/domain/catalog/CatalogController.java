@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequiredArgsConstructor
+@RequiredArgsConstructor @Slf4j
 public class CatalogController {
 
     private final CatalogService catalogService;
@@ -68,7 +68,7 @@ public class CatalogController {
         }
     }
 
-    @GetMapping("/catalog")
+    @GetMapping("/catalog/main")
     public ResponseEntity getMainCatalogs(CatalogSearchCondition condition,
                                           @RequestParam(value = "lastCatalogId", required = false)
                                                  Long lastCatalogId) {
@@ -81,12 +81,6 @@ public class CatalogController {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new Result<>(responses.size(), responses));
-    }
-
-    @Data @AllArgsConstructor
-    static class Result<T> {
-        private Integer count;
-        private T data;
     }
 
     @Data @AllArgsConstructor
@@ -104,5 +98,43 @@ public class CatalogController {
             this.stockQuantity = dto.getStockQuantity();
             this.categoryId = dto.getCategoryId();
         }
+    }
+
+    @GetMapping("/catalog/{catalogIds}")
+    public ResponseEntity getCatalogIn(@PathVariable List<Long> catalogIds) {
+        log.info("catalogIds = {}", catalogIds);
+
+        List<ResponseCatalogIn> responses = catalogService.findCatalogIn(catalogIds)
+                .stream()
+                .map(ResponseCatalogIn::new)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new Result<>(responses.size(), responses));
+    }
+
+    @Data
+    static class ResponseCatalogIn {
+        @NotNull
+        private Long catalogId;
+        @NotNull
+        private String name;
+        @NotNull
+        private Integer price;
+        @NotNull
+        private Integer stockQuantity;
+
+        public ResponseCatalogIn(CatalogDto dto) {
+            this.catalogId = dto.getCatalogId();
+            this.name = dto.getName();
+            this.price = dto.getPrice();
+            this.stockQuantity = dto.getStockQuantity();
+        }
+    }
+
+    @Data @AllArgsConstructor
+    static class Result<T> {
+        private Integer count;
+        private T data;
     }
 }
