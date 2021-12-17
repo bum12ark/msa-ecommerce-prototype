@@ -83,6 +83,12 @@ operation::user-get[snippets='curl-request,http-request,http-response,path-param
 === 단일 회원 (없는 회원)
 operation::user-get-notExist[snippets='curl-request,http-request,http-response,path-parameters']
 
+=== 단일 회원 조회 - 고유번호
+operation::user-get-byId[snippets='curl-request,http-request,http-response,path-parameters,response-fields']
+
+=== 단일 회원 조회 - 고유번호 (없는 회원)
+operation::user-get-byIdNotExist[snippets='curl-request,http-request,http-response,path-parameters']
+
 === 회원 수정
 operation::user-patch[snippets='curl-request,http-request,http-response,path-parameters,request-fields,response-fields']
 

@@ -347,6 +347,52 @@ class UserControllerTest {
         ;
     }
 
+    @Test
+    @DisplayName("회원 조회 - 회원 고유 번호")
+    public void getUserById() throws Exception {
+        // GIVEN
+        Long userId = 1L;
+        UserDto willReturnUserDto = new UserDto("testId@gmail.com", "홍길동"
+                , "서울시", "광화문로", "111-11", MemberType.NORMAL);
+        given(userService.findUserById(userId)).willReturn(willReturnUserDto);
+
+        // WHEN
+        ResultActions actions = mockMvc.perform(get("/users/userId/{userId}", userId));
+
+        // THEN
+        actions.andExpect(status().isOk())
+                .andDo(print())
+                .andDo(document("user-get-byId",
+                        pathParameters(
+                                parameterWithName("userId").description("유저 고유번호")
+                        ),
+                        responseFields(getResponseUserFieldDescriptors())
+                        ));
+    }
+
+    @Test
+    @DisplayName("회원 조회 - 회원 고유번호 (존재하지 않는 회원 번호)")
+    public void getUserByIdNotExistUser() throws Exception {
+        // GIVEN
+        Long userId = 100L;
+        UserDto willReturnUserDto = new UserDto("testId@gmail.com", "홍길동"
+                , "서울시", "광화문로", "111-11", MemberType.NORMAL);
+        willThrow(new NotExistUserException()).given(userService).findUserById(userId);
+
+        // WHEN
+        ResultActions actions = mockMvc.perform(get("/users/userId/{userId}", userId));
+
+        // THEN
+        actions.andExpect(status().isConflict())
+                .andDo(print())
+                .andDo(document("user-get-byIdNotExist",
+                        pathParameters(
+                                parameterWithName("userId").description("유저 고유번호")
+                        ),
+                        responseFields(getErrorDescription())
+                ));
+    }
+
     private FieldDescriptor getErrorDescription() {
         return fieldWithPath("message").description("에러 메시지");
     }
