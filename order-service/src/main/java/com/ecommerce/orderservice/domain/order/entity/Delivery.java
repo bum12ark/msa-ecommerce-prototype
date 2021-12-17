@@ -1,5 +1,6 @@
-package com.ecommerce.orderservice.domain.user.entity;
+package com.ecommerce.orderservice.domain.order.entity;
 
+import com.ecommerce.orderservice.domain.order.dto.DeliveryDto;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,5 +35,13 @@ public class Delivery {
         delivery.address = address;
         delivery.status = DeliveryStatus.READY;
         return delivery;
+    }
+
+    public DeliveryDto toDeliveryDto() {
+        return DeliveryDto.builder()
+                .city(address.getCity())
+                .street(address.getStreet())
+                .zipcode(address.getZipcode())
+                .build();
     }
 }

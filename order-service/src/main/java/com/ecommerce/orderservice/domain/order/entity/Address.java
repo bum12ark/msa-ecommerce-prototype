@@ -1,4 +1,4 @@
-package com.ecommerce.orderservice.domain.user.entity;
+package com.ecommerce.orderservice.domain.order.entity;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
