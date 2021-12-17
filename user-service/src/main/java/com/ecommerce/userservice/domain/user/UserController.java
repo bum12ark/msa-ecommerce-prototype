@@ -54,6 +54,14 @@ public class UserController {
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.OK).build());
     }
 
+    @GetMapping("/users/userId/{userId}")
+    public ResponseEntity<ResponseUser> getUserByUserId(@PathVariable("userId") Long userId) {
+        UserDto userById = userService.findUserById(userId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new ResponseUser(userById));
+    }
+
     @PatchMapping("/users/{email}")
     public ResponseEntity<ResponseUser> modifyUser(@RequestBody @Valid RequestModifyUser requestModifyUser,
                                                    @PathVariable("email") String email) {

@@ -68,4 +68,12 @@ public class UserServiceImpl implements UserService {
 
         userRepository.delete(user);
     }
+
+    @Override
+    public UserDto findUserById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(NotExistUserException::new);
+
+        return new UserDto(user);
+    }
 }

@@ -16,4 +16,6 @@ public interface UserService {
     UserDto modifyUserAddress(String email, Address address);
 
     void deleteUserByEmail(String email);
+
+    UserDto findUserById(Long id);
 }
