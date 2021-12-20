@@ -22,6 +22,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willThrow;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
@@ -204,7 +205,7 @@ class CatalogControllerTest {
 
         // WHEN
         ResultActions resultActions =
-                mockMvc.perform(get("/catalog/{catalogIds}", "1,2,3"));
+                mockMvc.perform(get("/catalogs/{catalogIds}", "1,2,3"));
 
         // THEN
         resultActions.andExpect(status().isOk())
@@ -231,6 +232,64 @@ class CatalogControllerTest {
         CatalogDto dto3 = CatalogDto.builder().catalogId(3L).name("티셔츠1").price(30_000).stockQuantity(300).build();
         return List.of(dto1, dto2, dto3);
     }
+
+    @Test
+    @DisplayName("카탈로그 조회 - 카탈로그 아이디")
+    public void getCatalogByCatalogId() throws Exception {
+        // Given
+        Long catalogId = 1L;
+
+        given(catalogService.getCatalogByCatalogId(catalogId))
+                .willReturn(new CatalogDto(1L, "제품1", 10_000, 100));
+
+        // When
+        ResultActions resultActions = mockMvc.perform(get("/catalog/{catalogId}", catalogId));
+
+        // Then
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("catalogId").value(1))
+                .andExpect(jsonPath("name").value("제품1"))
+                .andExpect(jsonPath("price").value(10_000))
+                .andExpect(jsonPath("stockQuantity").value(100))
+                .andDo(print())
+                .andDo(document("catalog-get-byId",
+                        pathParameters(
+                                parameterWithName("catalogId").description("카탈로그 고유 번호")
+                        ),
+                        responseFields(
+                                fieldWithPath("catalogId").description("카탈로그 고유번호"),
+                                fieldWithPath("name").description("카탈로그 이름"),
+                                fieldWithPath("price").description("가격"),
+                                fieldWithPath("stockQuantity").description("수량")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("카탈로그 조회 - 카탈로그 아이디 (DB 없는 카탈로그 번호)")
+    public void getCatalogByCatalogIdNotExistCatalogException() throws Exception {
+        // Given
+        Long notExistId = 100L;
+
+        given(catalogService.getCatalogByCatalogId(notExistId))
+                .willThrow(new NotExistCatalogException());
+
+        // When
+        ResultActions resultActions = mockMvc.perform(get("/catalog/{catalogId}", notExistId));
+
+        // Then
+        resultActions.andExpect(status().isConflict())
+                .andDo(print())
+                .andDo(document("catalog-get-byId-NotExistException",
+                        pathParameters(
+                                parameterWithName("catalogId").description("카탈로그 고유 번호")
+                        ),
+                        responseFields(
+                                getErrorDescription()
+                        )
+                ));
+    }
+
 
     private FieldDescriptor[] getRequestFieldDescriptor() {
         return new FieldDescriptor[]{fieldWithPath("name").type(JsonFieldType.STRING).description("카탈로그 이름"),
