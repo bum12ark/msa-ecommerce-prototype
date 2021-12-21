@@ -39,6 +39,11 @@ public class OrderLine {
         return orderLine;
     }
 
+    // == 편의 메소드 == //
+    public boolean isGreaterStock(int stock) {
+        return this.count > stock;
+    }
+
     public OrderLineDto toOrderLineDto() {
         return OrderLineDto.builder()
                 .catalogId(catalogId).count(count).orderPrice(orderPrice)

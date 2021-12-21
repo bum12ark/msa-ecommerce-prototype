@@ -2,6 +2,7 @@ package com.ecommerce.orderservice.domain.order.entity;
 
 import com.ecommerce.orderservice.domain.order.dto.OrderDto;
 import com.ecommerce.orderservice.domain.order.dto.OrderLineDto;
+import com.ecommerce.orderservice.domain.order.entity.listener.OrderListener;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name = "orders")
 @Getter @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EntityListeners(value = {OrderListener.class})
 public class Order {
     @Id @GeneratedValue
     @Column(name = "order_id")
