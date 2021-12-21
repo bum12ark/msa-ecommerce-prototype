@@ -1,5 +1,7 @@
-package com.ecommerce.catalogservice.domain.category;
+package com.ecommerce.catalogservice.domain.category.web;
 
+import com.ecommerce.catalogservice.domain.category.dto.CategoryDto;
+import com.ecommerce.catalogservice.domain.category.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

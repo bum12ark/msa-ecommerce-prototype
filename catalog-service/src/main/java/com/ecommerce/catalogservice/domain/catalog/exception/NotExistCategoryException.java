@@ -1,4 +1,4 @@
-package com.ecommerce.catalogservice.domain.catalog;
+package com.ecommerce.catalogservice.domain.catalog.exception;
 
 import com.ecommerce.catalogservice.exception.CustomException;
 import com.ecommerce.catalogservice.exception.ErrorEnum;

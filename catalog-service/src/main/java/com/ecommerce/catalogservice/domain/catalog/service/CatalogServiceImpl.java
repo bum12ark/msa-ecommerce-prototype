@@ -1,7 +1,15 @@
-package com.ecommerce.catalogservice.domain.catalog;
+package com.ecommerce.catalogservice.domain.catalog.service;
 
-import com.ecommerce.catalogservice.domain.category.Category;
-import com.ecommerce.catalogservice.domain.category.CategoryRepository;
+import com.ecommerce.catalogservice.domain.catalog.exception.NotExistCatalogException;
+import com.ecommerce.catalogservice.domain.catalog.repository.CatalogRepository;
+import com.ecommerce.catalogservice.domain.catalog.repository.CatalogRepositoryCustom;
+import com.ecommerce.catalogservice.domain.catalog.dto.CatalogCategoryDto;
+import com.ecommerce.catalogservice.domain.catalog.dto.CatalogDto;
+import com.ecommerce.catalogservice.domain.catalog.dto.CatalogSearchCondition;
+import com.ecommerce.catalogservice.domain.catalog.entity.Catalog;
+import com.ecommerce.catalogservice.domain.catalog.exception.NotExistCategoryException;
+import com.ecommerce.catalogservice.domain.category.entity.Category;
+import com.ecommerce.catalogservice.domain.category.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

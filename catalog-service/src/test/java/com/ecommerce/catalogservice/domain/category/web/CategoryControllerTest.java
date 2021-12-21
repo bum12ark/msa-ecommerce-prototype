@@ -1,6 +1,9 @@
-package com.ecommerce.catalogservice.domain.category;
+package com.ecommerce.catalogservice.domain.category.web;
 
 import com.ecommerce.catalogservice.config.TestConfig;
+import com.ecommerce.catalogservice.domain.category.dto.CategoryDto;
+import com.ecommerce.catalogservice.domain.category.service.CategoryService;
+import com.ecommerce.catalogservice.domain.category.web.CategoryController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

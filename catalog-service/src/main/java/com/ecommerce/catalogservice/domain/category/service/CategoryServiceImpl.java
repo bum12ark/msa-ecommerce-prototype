@@ -1,5 +1,8 @@
-package com.ecommerce.catalogservice.domain.category;
+package com.ecommerce.catalogservice.domain.category.service;
 
+import com.ecommerce.catalogservice.domain.category.dto.CategoryDto;
+import com.ecommerce.catalogservice.domain.category.entity.Category;
+import com.ecommerce.catalogservice.domain.category.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

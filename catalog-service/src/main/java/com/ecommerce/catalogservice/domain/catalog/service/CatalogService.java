@@ -1,4 +1,8 @@
-package com.ecommerce.catalogservice.domain.catalog;
+package com.ecommerce.catalogservice.domain.catalog.service;
+
+import com.ecommerce.catalogservice.domain.catalog.dto.CatalogCategoryDto;
+import com.ecommerce.catalogservice.domain.catalog.dto.CatalogDto;
+import com.ecommerce.catalogservice.domain.catalog.dto.CatalogSearchCondition;
 
 import java.util.List;
 

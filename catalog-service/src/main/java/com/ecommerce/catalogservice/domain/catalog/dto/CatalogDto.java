@@ -1,5 +1,6 @@
-package com.ecommerce.catalogservice.domain.catalog;
+package com.ecommerce.catalogservice.domain.catalog.dto;
 
+import com.ecommerce.catalogservice.domain.catalog.entity.Catalog;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

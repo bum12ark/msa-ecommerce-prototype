@@ -1,4 +1,4 @@
-package com.ecommerce.catalogservice.domain.catalog;
+package com.ecommerce.catalogservice.domain.catalog.dto;
 
 import lombok.*;
 
