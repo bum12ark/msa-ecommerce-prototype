@@ -1,5 +1,7 @@
-package com.ecommerce.catalogservice.domain.catalog;
+package com.ecommerce.catalogservice.domain.catalog.repository;
 
+import com.ecommerce.catalogservice.domain.catalog.dto.CatalogCategoryDto;
+import com.ecommerce.catalogservice.domain.catalog.dto.CatalogSearchCondition;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -8,8 +10,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static com.ecommerce.catalogservice.domain.catalog.QCatalog.*;
-import static com.ecommerce.catalogservice.domain.category.QCategory.*;
+import static com.ecommerce.catalogservice.domain.catalog.entity.QCatalog.*;
+import static com.ecommerce.catalogservice.domain.category.entity.QCategory.*;
 import static org.springframework.util.StringUtils.hasText;
 
 

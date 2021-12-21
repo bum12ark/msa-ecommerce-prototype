@@ -1,4 +1,4 @@
-package com.ecommerce.catalogservice.domain.category;
+package com.ecommerce.catalogservice.domain.category.dto;
 
 import lombok.Data;
 

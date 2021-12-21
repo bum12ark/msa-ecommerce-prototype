@@ -1,4 +1,6 @@
-package com.ecommerce.catalogservice.domain.category;
+package com.ecommerce.catalogservice.domain.category.service;
+
+import com.ecommerce.catalogservice.domain.category.dto.CategoryDto;
 
 public interface CategoryService {
 
