@@ -9,4 +9,6 @@ public interface CatalogService {
     List<CatalogCategoryDto> findCatalogSearch(CatalogSearchCondition condition, Long lastCatalogId);
 
     List<CatalogDto> findCatalogIn(List<Long> catalogIds);
+
+    CatalogDto getCatalogByCatalogId(Long catalogId);
 }

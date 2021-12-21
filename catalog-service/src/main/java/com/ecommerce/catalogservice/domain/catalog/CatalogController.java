@@ -100,7 +100,7 @@ public class CatalogController {
         }
     }
 
-    @GetMapping("/catalog/{catalogIds}")
+    @GetMapping("/catalogs/{catalogIds}")
     public ResponseEntity getCatalogIn(@PathVariable List<Long> catalogIds) {
         log.info("catalogIds = {}", catalogIds);
 
@@ -136,5 +136,29 @@ public class CatalogController {
     static class Result<T> {
         private Integer count;
         private T data;
+    }
+
+    @GetMapping("/catalog/{catalogId}")
+    public ResponseEntity getCatalog(@PathVariable("catalogId") Long catalogId) {
+
+        CatalogDto catalogByCatalogId = catalogService.getCatalogByCatalogId(catalogId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new ResponseGetCatalog(catalogByCatalogId));
+    }
+
+    @Data
+    static class ResponseGetCatalog {
+        private Long catalogId;
+        private String name;
+        private Integer price;
+        private Integer stockQuantity;
+
+        public ResponseGetCatalog(CatalogDto dto) {
+           this.catalogId = dto.getCatalogId();
+           this.name = dto.getName();
+           this.price = dto.getPrice();
+           this.stockQuantity = dto.getStockQuantity();
+        }
     }
 }
