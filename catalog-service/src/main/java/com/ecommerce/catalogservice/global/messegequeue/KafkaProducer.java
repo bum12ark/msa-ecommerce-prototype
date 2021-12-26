@@ -15,6 +15,7 @@ public class KafkaProducer {
     private final ObjectMapper objectMapper;
 
     public void send(String topic, Object target) {
+        log.info("Kafka Producer sent topic = {}", topic);
         try {
             String jsonString = objectMapper.writeValueAsString(target);
 
@@ -22,7 +23,5 @@ public class KafkaProducer {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-
-        log.info("Kafka Producer sent data = {}", target);
     }
 }

@@ -1,9 +1,10 @@
-package com.ecommerce.catalogservice.global.messegequeue;
+package com.ecommerce.catalogservice.domain.catalog.messagequeue;
 
 import com.ecommerce.catalogservice.domain.catalog.entity.Catalog;
 import com.ecommerce.catalogservice.domain.catalog.exception.NotExistCatalogException;
 import com.ecommerce.catalogservice.domain.catalog.repository.CatalogRepository;
 import com.ecommerce.catalogservice.domain.order.dto.OrderDto;
+import com.ecommerce.catalogservice.global.messegequeue.KafkaProducer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,9 +15,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 @Slf4j @RequiredArgsConstructor
-public class KafkaConsumer {
+public class CatalogKafkaConsumer {
 
     private final ObjectMapper objectMapper;
+    private final KafkaProducer kafkaProducer;
     private final CatalogRepository catalogRepository;
 
     @Transactional
@@ -34,5 +36,8 @@ public class KafkaConsumer {
 
                     catalog.updateQty(orderLineDto.getCount());
                 });
+
+        orderDto.order();
+        kafkaProducer.send("productChanged", orderDto);
     }
 }
