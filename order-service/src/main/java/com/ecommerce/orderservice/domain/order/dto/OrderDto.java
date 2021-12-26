@@ -2,10 +2,11 @@ package com.ecommerce.orderservice.domain.order.dto;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@Getter
+@Getter @NoArgsConstructor
 public class OrderDto {
     private Long id;
     private Long userId;
