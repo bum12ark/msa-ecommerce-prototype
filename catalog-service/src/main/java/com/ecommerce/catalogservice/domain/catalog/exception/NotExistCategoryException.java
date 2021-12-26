@@ -1,7 +1,7 @@
 package com.ecommerce.catalogservice.domain.catalog.exception;
 
-import com.ecommerce.catalogservice.exception.CustomException;
-import com.ecommerce.catalogservice.exception.ErrorEnum;
+import com.ecommerce.catalogservice.global.exception.CustomException;
+import com.ecommerce.catalogservice.global.exception.ErrorEnum;
 
 public class NotExistCategoryException extends CustomException {
 

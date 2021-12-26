@@ -1,4 +1,4 @@
-package com.ecommerce.catalogservice.exception;
+package com.ecommerce.catalogservice.global.exception;
 
 import lombok.Getter;
 
