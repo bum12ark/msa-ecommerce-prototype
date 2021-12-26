@@ -1,4 +1,4 @@
-package com.ecommerce.orderservice.domain.order.messagequeue;
+package com.ecommerce.orderservice.global.messagequeue;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

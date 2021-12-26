@@ -7,7 +7,7 @@ import com.ecommerce.orderservice.domain.order.client.user.UserClient;
 import com.ecommerce.orderservice.domain.order.dto.OrderDto;
 import com.ecommerce.orderservice.domain.order.entity.Order;
 import com.ecommerce.orderservice.domain.order.entity.OrderLine;
-import com.ecommerce.orderservice.domain.order.messagequeue.KafkaProducer;
+import com.ecommerce.orderservice.global.messagequeue.KafkaProducer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;

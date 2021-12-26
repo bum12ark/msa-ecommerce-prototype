@@ -39,6 +39,7 @@ public class Delivery {
 
     public DeliveryDto toDeliveryDto() {
         return DeliveryDto.builder()
+                .id(this.id)
                 .city(address.getCity())
                 .street(address.getStreet())
                 .zipcode(address.getZipcode())

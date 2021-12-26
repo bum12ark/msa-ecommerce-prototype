@@ -60,15 +60,21 @@ public class Order {
         return order;
     }
 
+    public void complete() {
+        this.status = OrderStatus.ORDER;
+    }
+
     public OrderDto toOrderDto() {
         List<OrderLineDto> orderLineDtoList = orderLines.stream()
                 .map(OrderLine::toOrderLineDto)
                 .collect(Collectors.toList());
 
         return OrderDto.builder()
+                .id(this.id)
                 .userId(this.userId)
                 .deliveryDto(delivery.toDeliveryDto())
                 .orderLineDtoList(orderLineDtoList)
                 .build();
     }
+
 }
