@@ -1,7 +1,7 @@
 package com.ecommerce.catalogservice.domain.category.entity;
 
 import com.ecommerce.catalogservice.domain.category.dto.CategoryDto;
-import com.ecommerce.catalogservice.entity.BaseEntity;
+import com.ecommerce.catalogservice.global.entity.BaseEntity;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;

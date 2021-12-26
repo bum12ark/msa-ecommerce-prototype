@@ -1,4 +1,4 @@
-package com.ecommerce.catalogservice.entity;
+package com.ecommerce.catalogservice.global.entity;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;

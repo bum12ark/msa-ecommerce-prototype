@@ -1,4 +1,4 @@
-package com.ecommerce.catalogservice.config;
+package com.ecommerce.catalogservice.global.config;
 
 import org.springframework.boot.test.autoconfigure.restdocs.RestDocsMockMvcConfigurationCustomizer;
 import org.springframework.boot.test.context.TestConfiguration;

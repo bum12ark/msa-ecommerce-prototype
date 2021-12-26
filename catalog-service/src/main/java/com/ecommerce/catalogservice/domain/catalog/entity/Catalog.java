@@ -2,7 +2,7 @@ package com.ecommerce.catalogservice.domain.catalog.entity;
 
 import com.ecommerce.catalogservice.domain.catalog.dto.CatalogDto;
 import com.ecommerce.catalogservice.domain.category.entity.Category;
-import com.ecommerce.catalogservice.entity.BaseEntity;
+import com.ecommerce.catalogservice.global.entity.BaseEntity;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -37,6 +37,10 @@ public class Catalog extends BaseEntity {
     /** 연관관계 편의 메소드 **/
     public void addCategory(Category category) {
         this.category = category;
+    }
+
+    public void updateQty(Integer count) {
+        this.stockQuantity -= count;
     }
 
     public Optional<CatalogDto> toOptionalCatalogDto() {
