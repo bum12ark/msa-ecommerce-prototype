@@ -2,8 +2,9 @@ package com.ecommerce.orderservice.domain.order.dto;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@Getter
+@Getter @NoArgsConstructor
 public class OrderLineDto {
     private Long id;
     private Long catalogId;
