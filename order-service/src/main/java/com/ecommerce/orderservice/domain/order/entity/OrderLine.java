@@ -46,7 +46,10 @@ public class OrderLine {
 
     public OrderLineDto toOrderLineDto() {
         return OrderLineDto.builder()
-                .catalogId(catalogId).count(count).orderPrice(orderPrice)
+                .id(this.id)
+                .catalogId(this.catalogId)
+                .count(this.count)
+                .orderPrice(this.orderPrice)
                 .build();
     }
 }

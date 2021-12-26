@@ -5,12 +5,14 @@ import lombok.Getter;
 
 @Getter
 public class DeliveryDto {
+    private Long id;
     private String city;
     private String street;
     private String zipcode;
 
     @Builder
-    public DeliveryDto(String city, String street, String zipcode) {
+    public DeliveryDto(Long id, String city, String street, String zipcode) {
+        this.id = id;
         this.city = city;
         this.street = street;
         this.zipcode = zipcode;
