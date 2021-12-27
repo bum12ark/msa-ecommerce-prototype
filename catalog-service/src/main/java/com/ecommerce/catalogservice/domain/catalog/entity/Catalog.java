@@ -39,8 +39,12 @@ public class Catalog extends BaseEntity {
         this.category = category;
     }
 
-    public void updateQty(Integer count) {
+    public void decreaseStockQuantity(Integer count) {
         this.stockQuantity -= count;
+    }
+
+    public void increaseStockQuantity(Integer count) {
+        this.stockQuantity += count;
     }
 
     public Optional<CatalogDto> toOptionalCatalogDto() {
@@ -50,4 +54,5 @@ public class Catalog extends BaseEntity {
     public CatalogDto toCatalogDto() {
         return new CatalogDto(id, name, price, stockQuantity);
     }
+
 }
