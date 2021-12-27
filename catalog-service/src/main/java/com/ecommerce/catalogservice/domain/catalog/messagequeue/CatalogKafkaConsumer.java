@@ -23,8 +23,8 @@ public class CatalogKafkaConsumer {
 
     @Transactional
     @KafkaListener(topics = "orderPlaced")
-    public void updateQty(String kafkaMessage) throws Exception {
-        log.info("KafkaConsumer.updateQty");
+    public void removeStockQuantity(String kafkaMessage) throws Exception {
+        log.info("KafkaConsumer.removeStockQuantity");
         log.info("Kafka message = {}", kafkaMessage);
 
         OrderDto orderDto = objectMapper.readValue(kafkaMessage, OrderDto.class);
@@ -34,10 +34,30 @@ public class CatalogKafkaConsumer {
                     Catalog catalog = catalogRepository.findById(orderLineDto.getCatalogId())
                             .orElseThrow(NotExistCatalogException::new);
 
-                    catalog.updateQty(orderLineDto.getCount());
+                    catalog.decreaseStockQuantity(orderLineDto.getCount());
                 });
 
-        orderDto.order();
+        orderDto.placed();
+        kafkaProducer.send("productChanged", orderDto);
+    }
+
+    @Transactional
+    @KafkaListener(topics = "orderCancelled")
+    public void rollbackStockQuantity(String kafkaMessage) throws Exception {
+        log.info("KafkaConsumer.rollbackStockQuantity");
+        log.info("Kafka message = {}", kafkaMessage);
+
+        OrderDto orderDto = objectMapper.readValue(kafkaMessage, OrderDto.class);
+
+        orderDto.getOrderLineDtoList()
+                .forEach(orderLineDto -> {
+                    Catalog catalog = catalogRepository.findById(orderLineDto.getCatalogId())
+                            .orElseThrow(NotExistCatalogException::new);
+
+                    catalog.increaseStockQuantity(orderLineDto.getCount());
+                });
+
+        orderDto.cancel();
         kafkaProducer.send("productChanged", orderDto);
     }
 }

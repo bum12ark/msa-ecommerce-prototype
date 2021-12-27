@@ -55,13 +55,17 @@ public class Order {
         for (OrderLine orderLine : orderLines) {
             order.addOrderLine(orderLine);
         }
-        order.status = OrderStatus.PLACED;
+        order.status = OrderStatus.PENDING;
         order.orderDate = LocalDateTime.now();
         return order;
     }
 
-    public void complete() {
-        this.status = OrderStatus.ORDER;
+    public void updateStatus(OrderStatus orderStatus) {
+        this.status = orderStatus;
+    }
+
+    public void pending() {
+        this.status = OrderStatus.PENDING;
     }
 
     public OrderDto toOrderDto() {
@@ -72,6 +76,7 @@ public class Order {
         return OrderDto.builder()
                 .id(this.id)
                 .userId(this.userId)
+                .orderStatus(this.status)
                 .deliveryDto(delivery.toDeliveryDto())
                 .orderLineDtoList(orderLineDtoList)
                 .build();

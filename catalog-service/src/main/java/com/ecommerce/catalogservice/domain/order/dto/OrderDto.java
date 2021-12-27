@@ -22,7 +22,11 @@ public class OrderDto {
         this.orderLineDtoList = orderLineDtoList;
     }
 
-    public void order() {
-        orderStatus = OrderStatus.ORDER;
+    public void placed() {
+        orderStatus = OrderStatus.PLACED;
+    }
+
+    public void cancel() {
+        orderStatus = OrderStatus.CANCEL;
     }
 }

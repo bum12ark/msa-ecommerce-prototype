@@ -30,6 +30,6 @@ public class OrderKafkaConsumer {
         Order order = orderRepository.findById(orderDto.getId())
                 .orElseThrow(NotExistOrder::new);
 
-        order.complete();
+        order.updateStatus(orderDto.getOrderStatus());
     }
 }

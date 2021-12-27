@@ -1,6 +1,5 @@
 package com.ecommerce.catalogservice.domain.catalog.web;
 
-import com.ecommerce.catalogservice.config.TestConfig;
 import com.ecommerce.catalogservice.domain.catalog.dto.CatalogCategoryDto;
 import com.ecommerce.catalogservice.domain.catalog.dto.CatalogDto;
 import com.ecommerce.catalogservice.domain.catalog.dto.CatalogSearchCondition;
@@ -9,7 +8,8 @@ import com.ecommerce.catalogservice.domain.catalog.exception.NotExistCategoryExc
 import com.ecommerce.catalogservice.domain.catalog.service.CatalogService;
 import com.ecommerce.catalogservice.domain.category.dto.CategoryDto;
 import com.ecommerce.catalogservice.domain.category.service.CategoryService;
-import com.ecommerce.catalogservice.exception.ErrorEnum;
+import com.ecommerce.catalogservice.global.config.TestConfig;
+import com.ecommerce.catalogservice.global.exception.ErrorEnum;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
