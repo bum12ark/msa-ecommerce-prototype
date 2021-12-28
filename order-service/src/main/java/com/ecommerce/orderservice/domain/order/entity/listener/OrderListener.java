@@ -10,42 +10,42 @@ import com.ecommerce.orderservice.domain.order.entity.OrderLine;
 import com.ecommerce.orderservice.global.messagequeue.KafkaProducer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
 
 import javax.persistence.PostPersist;
+import javax.persistence.PostUpdate;
 import javax.persistence.PrePersist;
 
 @Slf4j
 public class OrderListener {
-
-    @Autowired
-    private ApplicationContext context;
+    @Autowired @Lazy
+    private UserClient userClient;
+    @Autowired @Lazy
+    private CatalogClient catalogClient;
+    @Autowired @Lazy
+    private KafkaProducer kafkaProducer;
 
     @PrePersist
-    public void orderCheck(Order order) throws Exception {
+    public void orderCheck(Order order) {
         log.debug("OrderListener.orderCheck");
-        UserClient userClient = context.getBean(UserClient.class);
+        // 유저 정보 체크
         ResponseUser user = userClient.getUser(order.getUserId());
 
-        log.debug("user = {}", user);
-
-        CatalogClient catalogClient = context.getBean(CatalogClient.class);
+        // 카탈로그 정보 체크
         for (OrderLine orderLine : order.getOrderLines()) {
             ResponseCatalog catalogById = catalogClient.getCatalogById(orderLine.getCatalogId());
-            log.debug("catalogById = {}", catalogById);
-
-            if (orderLine.isGreaterStock(catalogById.getStockQuantity())) {
-                // TODO: 2021-12-21 Kafka Producer / Consumer 형식으로 변경 요망
-                throw new Exception("No Available stock!!!");
-            }
         }
     }
 
     @PostPersist
     private void publishOrderPlace(Order order) {
-        KafkaProducer kafkaProducer = context.getBean(KafkaProducer.class);
-
         OrderDto orderDto = order.toOrderDto();
         kafkaProducer.send("orderPlaced", orderDto);
+    }
+
+    @PostUpdate
+    private void publishOrderCancelled(Order order) {
+        if (!order.isCancel()) return;
+        kafkaProducer.send("orderCancelled", order.toOrderDto());
     }
 }

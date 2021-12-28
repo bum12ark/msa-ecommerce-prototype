@@ -47,6 +47,10 @@ public class Catalog extends BaseEntity {
         this.stockQuantity += count;
     }
 
+    public boolean isAvailableStock(Integer count) {
+        return this.stockQuantity - count >= 0;
+    }
+
     public Optional<CatalogDto> toOptionalCatalogDto() {
         return Optional.of(new CatalogDto(name, price, stockQuantity));
     }
