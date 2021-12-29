@@ -8,6 +8,7 @@ import com.ecommerce.orderservice.domain.order.entity.Order;
 import com.ecommerce.orderservice.domain.order.entity.OrderLine;
 import com.ecommerce.orderservice.domain.order.exception.NotExistOrder;
 import com.ecommerce.orderservice.domain.order.respository.OrderRepository;
+import com.ecommerce.orderservice.domain.order.respository.OrderRepositoryCustom;
 import com.ecommerce.orderservice.global.messagequeue.KafkaProducer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
-    private final KafkaProducer kafkaProducer;
+    private final OrderRepositoryCustom orderRepositoryCustom;
 
     @Override
     @Transactional
@@ -52,6 +53,13 @@ public class OrderServiceImpl implements OrderService {
 
         order.cancel();
 
+        return order.toOrderDto();
+    }
+
+    @Override
+    public OrderDto getOrderById(Long orderId) {
+        Order order = orderRepositoryCustom.findMainOrderById(orderId)
+                .orElseThrow(NotExistOrder::new);
         return order.toOrderDto();
     }
 }

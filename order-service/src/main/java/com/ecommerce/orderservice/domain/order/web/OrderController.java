@@ -40,6 +40,14 @@ public class OrderController {
                 .body(new Result<ResponseOrder>("OK", new ResponseOrder(canceledOrder)));
     }
 
+    @GetMapping("/order/{orderId}")
+    public ResponseEntity getOrderById(@PathVariable("orderId") Long orderId) {
+        OrderDto orderById = orderService.getOrderById(orderId);
+
+        return ResponseEntity.ok()
+                .body(new Result<ResponseOrder>("OK", new ResponseOrder(orderById)));
+    }
+
     @Data @NoArgsConstructor @AllArgsConstructor
     static class Result<T> {
         private String message;

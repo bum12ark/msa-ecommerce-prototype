@@ -69,5 +69,9 @@ domain-httpRequestCode-etc
 operation::order-post[snippets='curl-request,http-request,http-response,request-fields,response-fields']
 === 주문 취소
 operation::order-patch-cancel[snippets='curl-request,http-request,http-response,path-parameters,response-fields']
-=== 주문 취소 (존재 하지 않는 상품 번호)
+=== 주문 취소 (존재 하지 않는 주문 번호)
 operation::order-patch-cancel-notExistOrderId[snippets='curl-request,http-request,http-response,path-parameters,response-fields']
+=== 주문 조회
+operation::order-get-one[snippets='curl-request,http-request,http-response,path-parameters,response-fields']
+=== 주문 조회 (존재하지 않는 주문 번호)
+operation::order-get-one-notExistOrderId[snippets='curl-request,http-request,http-response,path-parameters,response-fields']
