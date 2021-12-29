@@ -20,9 +20,9 @@ public class OrderKafkaConsumer {
     private final OrderRepository orderRepository;
 
     @Transactional
-    @KafkaListener(topics = "productChanged")
-    public void productChanged(String kafkaMessage) throws Exception {
-        log.info("KafkaConsumer.productChanged");
+    @KafkaListener(topics = "productSuccess")
+    public void productSuccess(String kafkaMessage) throws Exception {
+        log.info("KafkaConsumer.productSuccess");
         log.info("Kafka message = {}", kafkaMessage);
 
         OrderDto orderDto = objectMapper.readValue(kafkaMessage, OrderDto.class);
@@ -30,6 +30,20 @@ public class OrderKafkaConsumer {
         Order order = orderRepository.findById(orderDto.getId())
                 .orElseThrow(NotExistOrder::new);
 
-        order.updateStatus(orderDto.getOrderStatus());
+        order.placed();
+    }
+
+    @Transactional
+    @KafkaListener(topics = "productOutOfStock")
+    public void productOutOfStock(String kafkaMessage) throws Exception {
+        log.info("KafkaConsumer.productOutOfStock");
+        log.info("Kafka message = {}", kafkaMessage);
+
+        OrderDto orderDto = objectMapper.readValue(kafkaMessage, OrderDto.class);
+
+        Order order = orderRepository.findById(orderDto.getId())
+                .orElseThrow(NotExistOrder::new);
+
+        order.cancel();
     }
 }

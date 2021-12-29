@@ -60,12 +60,16 @@ public class Order {
         return order;
     }
 
-    public void updateStatus(OrderStatus orderStatus) {
-        this.status = orderStatus;
+    public void placed() {
+        this.status = OrderStatus.PLACED;
     }
 
-    public void pending() {
-        this.status = OrderStatus.PENDING;
+    public void cancel() {
+        this.status = OrderStatus.CANCEL;
+    }
+
+    public boolean isCancel() {
+        return this.status == OrderStatus.CANCEL;
     }
 
     public OrderDto toOrderDto() {
@@ -81,5 +85,6 @@ public class Order {
                 .orderLineDtoList(orderLineDtoList)
                 .build();
     }
+
 
 }

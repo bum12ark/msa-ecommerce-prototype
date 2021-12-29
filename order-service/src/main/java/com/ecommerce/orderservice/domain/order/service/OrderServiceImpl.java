@@ -49,10 +49,9 @@ public class OrderServiceImpl implements OrderService {
     public OrderDto cancelOrder(Long orderId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(NotExistOrder::new);
-        order.pending();
 
-        OrderDto orderDto = order.toOrderDto();
-        kafkaProducer.send("orderCancelled", orderDto);
-        return orderDto;
+        order.cancel();
+
+        return order.toOrderDto();
     }
 }

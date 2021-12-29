@@ -40,7 +40,7 @@ public class OrderLine {
     }
 
     // == 편의 메소드 == //
-    public boolean isGreaterStock(int stock) {
+    public boolean isAvailableStock(int stock) {
         return this.count > stock;
     }
 
