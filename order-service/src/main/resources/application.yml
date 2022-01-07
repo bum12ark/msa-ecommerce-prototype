@@ -36,3 +36,6 @@ management.endpoints.web.exposure.include: busrefresh, health
 logging.level:
   com.ecommerce: DEBUG
   org.hibernate.type: trace
+
+ipv4-address:
+  kafka: 127.0.0.1:9092

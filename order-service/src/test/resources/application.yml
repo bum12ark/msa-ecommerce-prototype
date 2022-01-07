@@ -1,2 +1,5 @@
 # http response utf-8 설정 (MockMvc 사용 시 한글 깨짐 이슈)
 server.servlet.encoding.force-response: true
+
+ipv4-address:
+  kafka: 127.0.0.1:9092
